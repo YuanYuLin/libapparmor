@@ -21,11 +21,11 @@ def set_global(args):
     output_dir = args["output_path"]
     arch = ops.getEnv("ARCH_ALT")
     if arch == "armhf":
-        src_lib_dir = iopc.getBaseRootFile("lib/arm-linux-gnueabihf")
+        src_lib_dir = iopc.getBaseRootFile("usr/lib/arm-linux-gnueabihf")
     elif arch == "armel":
-        src_lib_dir = iopc.getBaseRootFile("lib/arm-linux-gnueabi")
+        src_lib_dir = iopc.getBaseRootFile("usr/lib/arm-linux-gnueabi")
     elif arch == "x86_64":
-        src_lib_dir = iopc.getBaseRootFile("lib/x86_64-linux-gnu")
+        src_lib_dir = iopc.getBaseRootFile("usr/lib/x86_64-linux-gnu")
     else:
         sys.exit(1)
     dst_lib_dir = ops.path_join(output_dir, "lib")
@@ -42,9 +42,12 @@ def MAIN_EXTRACT(args):
     set_global(args)
 
     ops.mkdir(dst_lib_dir)
-    ops.copyto(ops.path_join(src_lib_dir, "libapparmor.so.1.4.0"), dst_lib_dir)
-    ops.ln(dst_lib_dir, "libapparmor.so.1.4.0", "libapparmor.so.1")
-    ops.ln(dst_lib_dir, "libapparmor.so.1.4.0", "libapparmor.so")
+
+    lib_so = "libapparmor.so.1.2.0"
+    ops.copyto(ops.path_join(src_lib_dir, lib_so), dst_lib_dir)
+    ops.ln(dst_lib_dir, lib_so, "libapparmor.so.1.2")
+    ops.ln(dst_lib_dir, lib_so, "libapparmor.so.1")
+    ops.ln(dst_lib_dir, lib_so, "libapparmor.so")
     return True
 
 def MAIN_PATCH(args, patch_group_name):
@@ -70,7 +73,7 @@ def MAIN_INSTALL(args):
 
     iopc.installBin(args["pkg_name"], ops.path_join(src_include_dir, "aalogparse/aalogparse.h"), dst_include_dir)
     iopc.installBin(args["pkg_name"], ops.path_join(src_include_dir, "sys/apparmor.h"), dst_include_dir)
-    iopc.installBin(args["pkg_name"], ops.path_join(src_include_dir, "sys/apparmor_private.h"), dst_include_dir)
+    #iopc.installBin(args["pkg_name"], ops.path_join(src_include_dir, "sys/apparmor_private.h"), dst_include_dir)
     iopc.installBin(args["pkg_name"], ops.path_join(dst_lib_dir, "."), "lib") 
     return False
 
